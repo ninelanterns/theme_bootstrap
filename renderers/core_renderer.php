@@ -30,21 +30,23 @@ class theme_bootstrap_core_renderer extends core_renderer {
      */
     public function notification($message, $classes = 'notifyproblem') {
         $message = clean_text($message);
-        $type = '';
 
         if ($classes == 'notifyproblem') {
-            $type = 'alert alert-danger';
+            return html_writer::div($message, 'alert alert-danger');
+        }
+        if ($classes == 'notifywarning') {
+            return html_writer::div($message, 'alert alert-warning');
         }
         if ($classes == 'notifysuccess') {
-            $type = 'alert alert-success';
+            return html_writer::div($message, 'alert alert-success');
         }
         if ($classes == 'notifymessage') {
-            $type = 'alert alert-info';
+            return html_writer::div($message, 'alert alert-info');
         }
         if ($classes == 'redirectmessage') {
-            $type = 'alert alert-block alert-info';
+            return html_writer::div($message, 'alert alert-block alert-info');
         }
-        return "<div class=\"$type\">$message</div>";
+        return html_writer::div($message, $classes);
     }
 
     /*
@@ -144,15 +146,15 @@ class theme_bootstrap_core_renderer extends core_renderer {
                 $senderpicture = $this->render($senderpicture);
 
                 $messagecontent = $senderpicture;
-                $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-body'));
-                $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-title'));
-                $messagecontent .= html_writer::tag('span', $message->from->firstname . ': ', array('class' => 'msg-sender'));
+                $messagecontent .= html_writer::start_span('msg-body');
+                $messagecontent .= html_writer::start_span('msg-title');
+                $messagecontent .= html_writer::span($message->from->firstname . ': ', 'msg-sender');
                 $messagecontent .= $message->text;
-                $messagecontent .= html_writer::end_tag('span');
-                $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-time'));
+                $messagecontent .= html_writer::end_span();
+                $messagecontent .= html_writer::start_span('msg-time');
                 $messagecontent .= html_writer::tag('i', '', array('class' => 'icon-time'));
-                $messagecontent .= html_writer::tag('span', $message->date);
-                $messagecontent .= html_writer::end_tag('span');
+                $messagecontent .= html_writer::span($message->date);
+                $messagecontent .= html_writer::end_span();
 
                 $messageurl = new moodle_url('/message/index.php', array('user1' => $USER->id, 'user2' => $message->from->id));
                 $messagemenu->add($messagecontent, $messageurl, $message->state);
