@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Renderers to align Moodle's HTML with that expected by Bootstrap
  *
@@ -24,10 +26,6 @@
 
 class theme_bootstrap_core_renderer extends core_renderer {
 
-    /*
-     * This renders a notification message.
-     * Uses bootstrap compatible html.
-     */
     public function notification($message, $classes = 'notifyproblem') {
         $message = clean_text($message);
 
@@ -49,10 +47,6 @@ class theme_bootstrap_core_renderer extends core_renderer {
         return html_writer::div($message, $classes);
     }
 
-    /*
-     * This renders the navbar.
-     * Uses bootstrap compatible html.
-     */
     public function navbar() {
         $breadcrumbs = '';
         foreach ($this->page->navbar->get_items() as $item) {
@@ -62,12 +56,9 @@ class theme_bootstrap_core_renderer extends core_renderer {
         return "<ol class=breadcrumb>$breadcrumbs</ol>";
     }
 
-    /*
-     * Overriding the custom_menu function ensures the custom menu is
-     * always shown, even if no menu items are configured in the global
-     * theme settings page.
-     */
     public function custom_menu($custommenuitems = '') {
+    // The custom menu is always shown, even if no menu items
+    // are configured in the global theme settings page.
         global $CFG;
 
         if (!empty($CFG->custommenuitems)) {
@@ -77,11 +68,6 @@ class theme_bootstrap_core_renderer extends core_renderer {
         return $this->render_custom_menu($custommenu);
     }
 
-    /*
-     * This renders the bootstrap top menu.
-     *
-     * This renderer is needed to enable the Bootstrap style navigation.
-     */
     protected function render_custom_menu(custom_menu $menu) {
         global $CFG, $USER;
 
@@ -96,22 +82,12 @@ class theme_bootstrap_core_renderer extends core_renderer {
         return $content.'</ul>';
     }
 
-    /*
-     * Overriding the custom_menu function ensures the custom menu is
-     * always shown, even if no menu items are configured in the global
-     * theme settings page.
-     */
     public function user_menu() {
         global $CFG;
         $usermenu = new custom_menu('', current_language());
         return $this->render_user_menu($usermenu);
     }
 
-    /*
-     * This renders the bootstrap top menu.
-     *
-     * This renderer is needed to enable the Bootstrap style navigation.
-     */
     protected function render_user_menu(custom_menu $menu) {
         global $CFG, $USER, $DB;
 
@@ -122,13 +98,6 @@ class theme_bootstrap_core_renderer extends core_renderer {
         if (!isloggedin() || isguestuser()) {
             $addmessagemenu = false;
         }
-
-        /*
-         $messagecount = $DB->count_records('message', array('useridto' => $USER->id));
-         if ($messagecount<1) {
-         $addmessagemenu = false;
-         }
-         */
 
         if ($addmessagemenu) {
             $messages = $this->get_user_messages();
@@ -141,6 +110,9 @@ class theme_bootstrap_core_renderer extends core_renderer {
             );
             foreach ($messages as $message) {
 
+                if (!$message->from) { // Workaround for issue #103.
+                    continue;
+                }
                 $senderpicture = new user_picture($message->from);
                 $senderpicture->link = false;
                 $senderpicture = $this->render($senderpicture);
@@ -175,28 +147,24 @@ class theme_bootstrap_core_renderer extends core_renderer {
             }
         }
 
-        if (!$menu->has_children() && $addlangmenu === false) {
-            return '';
-        }
-
         if ($addusermenu) {
             if (isloggedin()) {
                 $usermenu = $menu->add(fullname($USER), new moodle_url('#'), fullname($USER), 10001);
                 $usermenu->add(
-                    '<i class="icon-lock"></i>' . get_string('logout'),
-                    new moodle_url('/login/logout.php', array('sesskey'=>sesskey(), 'alt'=>'logout')),
+                    '<span class="glyphicon glyphicon-off"></span>' . get_string('logout'),
+                    new moodle_url('/login/logout.php', array('sesskey' => sesskey(), 'alt' => 'logout')),
                     get_string('logout')
                 );
 
                 $usermenu->add(
-                    '<i class="icon-user"></i>' . get_string('viewprofile'),
-                    new moodle_url('/user/profile.php', array('id'=>$USER->id)),
+                    '<span class="glyphicon glyphicon-user"></span>' . get_string('viewprofile'),
+                    new moodle_url('/user/profile.php', array('id' => $USER->id)),
                     get_string('viewprofile')
                 );
 
                 $usermenu->add(
-                    '<i class="icon-cog"></i>' . get_string('editmyprofile'),
-                    new moodle_url('/user/edit.php', array('id'=>$USER->id)),
+                    '<span class="glyphicon glyphicon-cog"></span>' . get_string('editmyprofile'),
+                    new moodle_url('/user/edit.php', array('id' => $USER->id)),
                     get_string('editmyprofile')
                 );
             } else {
@@ -290,12 +258,6 @@ class theme_bootstrap_core_renderer extends core_renderer {
         return $messagecontent;
     }
 
-
-
-    /*
-     * This code renders the custom menu items for the
-     * bootstrap dropdown menu.
-     */
     protected function render_custom_menu_item(custom_menu_item $menunode, $level = 0 ) {
         static $submenucount = 0;
 
@@ -307,7 +269,7 @@ class theme_bootstrap_core_renderer extends core_renderer {
                 $dropdowntype = 'dropdown-submenu';
             }
 
-            $content = html_writer::start_tag('li', array('class'=>$dropdowntype));
+            $content = html_writer::start_tag('li', array('class' => $dropdowntype));
             // If the child has menus render it as a sub menu.
             $submenucount++;
             if ($menunode->get_url() !== null) {
@@ -315,13 +277,13 @@ class theme_bootstrap_core_renderer extends core_renderer {
             } else {
                 $url = '#cm_submenu_'.$submenucount;
             }
-            $link_attributes = array(
-                'href'=>$url,
-                'class'=>'dropdown-toggle',
-                'data-toggle'=>'dropdown',
-                'title'=>$menunode->get_title(),
+            $linkattributes = array(
+                'href' => $url,
+                'class' => 'dropdown-toggle',
+                'data-toggle' => 'dropdown',
+                'title' => $menunode->get_title(),
             );
-            $content .= html_writer::start_tag('a', $link_attributes);
+            $content .= html_writer::start_tag('a', $linkattributes);
             $content .= $menunode->get_text();
             if ($level == 1) {
                 $content .= '<b class="caret"></b>';
@@ -340,17 +302,11 @@ class theme_bootstrap_core_renderer extends core_renderer {
             } else {
                 $url = '#';
             }
-            $content .= html_writer::link($url, $menunode->get_text(), array('title'=>$menunode->get_title()));
+            $content .= html_writer::link($url, $menunode->get_text(), array('title' => $menunode->get_title()));
         }
         return $content;
     }
 
-    /**
-     * Renders tabtree
-     *
-     * @param tabtree $tabtree
-     * @return string
-     */
     protected function render_tabtree(tabtree $tabtree) {
         if (empty($tabtree->subtree)) {
             return '';
@@ -365,15 +321,6 @@ class theme_bootstrap_core_renderer extends core_renderer {
         return html_writer::tag('ul', $firstrow, array('class' => 'nav nav-tabs')) . $secondrow;
     }
 
-    /**
-     * Renders tabobject (part of tabtree)
-     *
-     * This function is called from {@link core_renderer::render_tabtree()}
-     * and also it calls itself when printing the $tabobject subtree recursively.
-     *
-     * @param tabobject $tabobject
-     * @return string HTML fragment
-     */
     protected function render_tabobject(tabobject $tab) {
         if ($tab->selected or $tab->activated) {
             return html_writer::tag('li', html_writer::tag('a', $tab->text), array('class' => 'active'));
@@ -388,17 +335,5 @@ class theme_bootstrap_core_renderer extends core_renderer {
             }
             return html_writer::tag('li', $link);
         }
-    }
-
-    /*
-     * This renders a notification message.
-     * Uses bootstrap compatible html.
-     */
-    public function page_heading($tag = 'h1') {
-        $heading = parent::page_heading();
-        if ($this->page->pagelayout == 'frontpage') {
-            $heading .= '<h3>' . $this->page->theme->settings->subtitle . '</h3>';
-        }
-        return $heading;
     }
 }

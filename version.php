@@ -17,7 +17,7 @@
 /**
  * Theme version info
  *
- * @package    theme_bootstrapbase
+ * @package    theme_bootstrap
  * @copyright  2014 Bas Brands, www.basbrands.nl
  * @authors    Bas Brands, David Scotson
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2014021300;
+$plugin->version   = 2014022000;
 $plugin->requires  = 2013110500;
+$plugin->maturity  = MATURITY_BETA;
+$plugin->release   = 2014022000;
 $plugin->component = 'theme_bootstrap';
