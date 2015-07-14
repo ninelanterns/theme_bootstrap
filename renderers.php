@@ -23,12 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('renderers/core_renderer.php');
-require_once('renderers/maintenance_renderer.php');
-require_once('renderers/admin_renderer.php');
-require_once('renderers/course_renderer.php');
-require_once('renderers/course_format_renderer.php');
-require_once('renderers/course_management.php');
-require_once('renderers/files_renderer.php');
-require_once('renderers/block_settings_renderer.php');
-require_once('renderers/enrol_renderer.php');
+require_once(__DIR__.'/renderers/core_renderer.php');
+require_once(__DIR__.'/renderers/maintenance_renderer.php');
+require_once(__DIR__.'/renderers/admin_renderer.php');
+require_once(__DIR__.'/renderers/course_renderer.php');
+require_once(__DIR__.'/renderers/course_format_renderer.php');
+require_once(__DIR__.'/renderers/course_management.php');
+require_once(__DIR__.'/renderers/files_renderer.php');
+require_once(__DIR__.'/renderers/block_settings_renderer.php');
+require_once(__DIR__.'/renderers/enrol_renderer.php');
